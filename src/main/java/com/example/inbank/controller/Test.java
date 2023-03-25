@@ -22,7 +22,7 @@ public class Test {
         return "INBANK";
     }
 
-    @PostMapping("test/user")
+    @PostMapping("user/loan")
     public LoanDataDto tear(@RequestBody UserDto userDto){
         return loanCalculatorService.calculateCreditScore(userDto);
     }
