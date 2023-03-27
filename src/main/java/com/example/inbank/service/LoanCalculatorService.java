@@ -29,34 +29,34 @@ public class LoanCalculatorService {
 
 
     public LoanDataDto calculateCreditScore(UserDto userDto) throws DebtException, WrongIdException {
-        BigDecimal creditScore;
-        String personalId = userDto.getPersonalCode();
-        BigDecimal loanAmount = BigDecimal.valueOf(userDto.getLoanAmount());
-        BigDecimal loanPeriod = BigDecimal.valueOf(userDto.getLoanPeriod());
-        if (!creditModifier.containsKey(userDto.getPersonalCode())) {
-            throw new WrongIdException("Wrong id!");
-        } else if (creditModifier.get(personalId).equals("debt")) {
-            throw new DebtException("Debt!");
-        }
-        creditScore = BigDecimal.valueOf(Long.parseLong(creditModifier.get(personalId)))
-                .divide(loanAmount, MathContext.DECIMAL32).multiply(loanPeriod);
-        BigDecimal newLoanAmount = loanAmount.multiply(creditScore).setScale(0, RoundingMode.HALF_UP);
-        // if loan (amount * credit score) is between minimum loan amount and maximum loan amount that bank can give
-        if (newLoanAmount.compareTo(maxSum) <= 0 && newLoanAmount.compareTo(minSum) >= 0) {
-            if (newLoanAmount.compareTo(loanAmount) >= 0) {
-                return LoanDataDto.builder().loanPeriod(loanPeriod).loanAmount(newLoanAmount).decision("Positive").build();
+            BigDecimal creditScore;
+            String personalId = userDto.getPersonalCode();
+            BigDecimal loanAmount = BigDecimal.valueOf(userDto.getLoanAmount());
+            BigDecimal loanPeriod = BigDecimal.valueOf(userDto.getLoanPeriod());
+            if (!creditModifier.containsKey(userDto.getPersonalCode())) {
+                throw new WrongIdException("Wrong id!");
+            } else if (creditModifier.get(personalId).equals("debt")) {
+                throw new DebtException("Debt!");
             }
-            return LoanDataDto.builder().loanPeriod(loanPeriod).loanAmount(newLoanAmount).decision("Negative").build();
-        }
-        // if loan (amount * credit score) is bigger than maximum loan amount that bank can give
-        else if (newLoanAmount.compareTo(maxSum) > 0) {
-            return LoanDataDto.builder().loanPeriod(loanPeriod).loanAmount(maxSum).decision("Positive").build();
-        }
-        // if loan (amount * credit score) is smaller than minimum loan amount that bank can give
-        else if (newLoanAmount.compareTo(minSum) < 0) {
-            return calculateNewMonths(userDto);
-        }
-        return null;
+            creditScore = BigDecimal.valueOf(Long.parseLong(creditModifier.get(personalId)))
+                    .divide(loanAmount, MathContext.DECIMAL32).multiply(loanPeriod);
+            BigDecimal newLoanAmount = loanAmount.multiply(creditScore).setScale(0, RoundingMode.HALF_UP);
+            // if loan (amount * credit score) is between minimum loan amount and maximum loan amount that bank can give
+            if (newLoanAmount.compareTo(maxSum) <= 0 && newLoanAmount.compareTo(minSum) >= 0) {
+                if (newLoanAmount.compareTo(loanAmount) >= 0) {
+                    return LoanDataDto.builder().loanPeriod(loanPeriod).loanAmount(newLoanAmount).decision("Positive").build();
+                }
+                return LoanDataDto.builder().loanPeriod(loanPeriod).loanAmount(newLoanAmount).decision("Negative").build();
+            }
+            // if loan (amount * credit score) is bigger than maximum loan amount that bank can give
+            else if (newLoanAmount.compareTo(maxSum) > 0) {
+                return LoanDataDto.builder().loanPeriod(loanPeriod).loanAmount(maxSum).decision("Positive").build();
+            }
+            // if loan (amount * credit score) is smaller than minimum loan amount that bank can give
+            else if (newLoanAmount.compareTo(minSum) < 0) {
+                return calculateNewMonths(userDto);
+            }
+            return null;
     }
 
     public LoanDataDto calculateNewMonths(UserDto userDto) {
