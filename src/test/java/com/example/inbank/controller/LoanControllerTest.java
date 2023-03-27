@@ -42,7 +42,7 @@ class LoanControllerTest {
         UserDto userDto = UserDto.builder().personalCode("57654574").loanPeriod(60).loanAmount(9000).build();
         mockMvc.perform(post("/user/loan").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
 
@@ -51,6 +51,6 @@ class LoanControllerTest {
         UserDto userDto = UserDto.builder().personalCode("49002010965").loanPeriod(60).loanAmount(9000).build();
         mockMvc.perform(post("/user/loan").contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isConflict());
     }
 }

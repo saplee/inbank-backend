@@ -16,12 +16,12 @@ public class ErrorHandler {
     @ExceptionHandler(WrongIdException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(RuntimeException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DebtException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(RuntimeException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 }
