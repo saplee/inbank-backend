@@ -20,7 +20,8 @@ public class LoanCalculatorService {
     private final int maxLoanPeriod = 60;
 
     public LoanCalculatorService() {
-        this.creditModifier = new HashMap<>(Map.of("49002010965", "debt",
+        this.creditModifier = new HashMap<>(Map.of(
+                "49002010965", "debt",
                 "49002010976", "100",
                 "49002010987", "300",
                 "49002010998", "1000"));
@@ -35,7 +36,7 @@ public class LoanCalculatorService {
         if (!creditModifier.containsKey(userDto.getPersonalCode())) {
             throw new WrongIdException("Wrong id!");
         } else if (creditModifier.get(personalId).equals("debt")) {
-            throw new DebtException("We cannot give you loan!");
+            throw new DebtException("Debt!");
         }
         creditScore = BigDecimal.valueOf(Long.parseLong(creditModifier.get(personalId)))
                 .divide(loanAmount, MathContext.DECIMAL32).multiply(loanPeriod);
@@ -67,7 +68,7 @@ public class LoanCalculatorService {
                     .divide(loanAmount, MathContext.DECIMAL32).multiply(BigDecimal.valueOf(i));
             BigDecimal newLoanAmount = loanAmount.multiply(creditScore).setScale(0, RoundingMode.HALF_UP);
             if (newLoanAmount.compareTo(minSum) >= 0) {
-                return LoanDataDto.builder().loanPeriod(newLoanAmount).loanPeriod(BigDecimal.valueOf(i)).decision("Negative").build();
+                return LoanDataDto.builder().loanAmount(newLoanAmount).loanPeriod(BigDecimal.valueOf(i)).decision("Negative").build();
             }
         }
         return LoanDataDto.builder().loanPeriod(null).loanPeriod(null).decision("Negative").build();
